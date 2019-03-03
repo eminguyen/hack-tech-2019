@@ -1,5 +1,7 @@
 package com.example.hacktech;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -11,30 +13,115 @@ import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.Toast;
 
+import app.akexorcist.bluetotohspp.library.BluetoothSPP;
+import app.akexorcist.bluetotohspp.library.BluetoothState;
+import app.akexorcist.bluetotohspp.library.DeviceList;
+
 public class MainActivity extends AppCompatActivity {
+
+    final String LEFT = "0";
+    final String RIGHT = "1";
+    final String STRAIGHT = "2";
+    final String PEWPEW = "3";
+
+    BluetoothSPP bluetooth;
+
+    Button connect;
+    Button left;
+    Button right;
+    Button pewpew;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        final Toast toast = Toast.makeText(getApplicationContext(), "Ysabelle Sucks", Toast.LENGTH_SHORT);
+        bluetooth = new BluetoothSPP(this);
 
-        final Button btnLeftForward = findViewById(R.id.btnLeftForward);
-        final Button btnRightForward = findViewById(R.id.btnLeftForward);
+        connect = (Button) findViewById(R.id.connect);
+        left = (Button) findViewById(R.id.btnLeftForward);
+        right = (Button) findViewById(R.id.btnRightForward);
+        pewpew = (Button) findViewById(R.id.btnPewPew);
 
-        btnLeftForward.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                toast.show();
+        if (!bluetooth.isBluetoothAvailable()) {
+            Toast.makeText(getApplicationContext(), "Bluetooth is not available", Toast.LENGTH_SHORT).show();
+            finish();
+        }
+
+        bluetooth.setBluetoothConnectionListener(new BluetoothSPP.BluetoothConnectionListener() {
+            public void onDeviceConnected(String name, String address) {
+                connect.setText("Connected to " + name);
+            }
+
+            public void onDeviceDisconnected() {
+                connect.setText("Connection lost");
+            }
+
+            public void onDeviceConnectionFailed() {
+                connect.setText("Unable to connect");
             }
         });
 
-        btnRightForward.setOnClickListener(new View.OnClickListener() {
+        connect.setOnClickListener(new View.OnClickListener() {
+            @Override
             public void onClick(View v) {
-                toast.show();
+                if (bluetooth.getServiceState() == BluetoothState.STATE_CONNECTED) {
+                    bluetooth.disconnect();
+                } else {
+                    Intent intent = new Intent(getApplicationContext(), DeviceList.class);
+                    startActivityForResult(intent, BluetoothState.REQUEST_CONNECT_DEVICE);
+                }
+            }
+        });
+
+        left.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                bluetooth.send(LEFT, true);
+            }
+        });
+
+        right.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                bluetooth.send(RIGHT, true);
             }
         });
 
     }
-}
 
+    public void onStart() {
+        super.onStart();
+        if (!bluetooth.isBluetoothEnabled()) {
+            bluetooth.enable();
+        } else {
+            if (!bluetooth.isServiceAvailable()) {
+                bluetooth.setupService();
+                bluetooth.startService(BluetoothState.DEVICE_OTHER);
+            }
+        }
+    }
+
+
+    public void onDestroy() {
+        super.onDestroy();
+        bluetooth.stopService();
+    }
+
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == BluetoothState.REQUEST_CONNECT_DEVICE) {
+            if (resultCode == Activity.RESULT_OK)
+                bluetooth.connect(data);
+        } else if (requestCode == BluetoothState.REQUEST_ENABLE_BT) {
+            if (resultCode == Activity.RESULT_OK) {
+                bluetooth.setupService();
+            } else {
+                Toast.makeText(getApplicationContext()
+                        , "Bluetooth was not enabled."
+                        , Toast.LENGTH_SHORT).show();
+                finish();
+            }
+        }
+    }
+
+}
