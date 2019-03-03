@@ -2,6 +2,8 @@ package com.example.hacktech;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.media.AudioManager;
+import android.media.SoundPool;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -17,7 +19,11 @@ import app.akexorcist.bluetotohspp.library.BluetoothSPP;
 import app.akexorcist.bluetotohspp.library.BluetoothState;
 import app.akexorcist.bluetotohspp.library.DeviceList;
 
+
 public class MainActivity extends AppCompatActivity {
+
+    private SoundPool sounds;
+    private int sExplosion;
 
     final String LEFT = "0";
     final String RIGHT = "1";
@@ -33,6 +39,8 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        sounds = new SoundPool(10, AudioManager.STREAM_MUSIC,0);
+        sExplosion = sounds.load(this,  R.raw.pew, 1);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -85,6 +93,13 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 bluetooth.send(RIGHT, true);
+            }
+        });
+        pewpew.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                bluetooth.send(PEWPEW, true);
+                sounds.play(sExplosion, 1.0f, 1.0f, 0, 0, 1.5f);
             }
         });
 

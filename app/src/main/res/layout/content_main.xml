@@ -9,43 +9,44 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
-        android:layout_marginTop="-50dp">
+        android:layout_marginTop="70dp">
 
         <Button android:id="@+id/btnLeftForward"
-            android:layout_width="270dp"
-            android:layout_height="wrap_content"
-            android:text="Left Motor"
-            android:layout_gravity="center"/>
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:background="@drawable/circle"
+            android:text="Left"
+            android:layout_marginRight="50dp"
+            android:textColor="#fff"/>
 
         <Button android:id="@+id/btnRightForward"
-            android:layout_width="270dp"
-            android:layout_height="wrap_content"
-            android:text="Right Motor"
-            android:layout_gravity="center"/>
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:background="@drawable/circle"
+            android:text="Not Left"
+            android:layout_marginLeft="50dp"
+            android:textColor="#fff"/>
 
     </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
+    <Button
+        android:id="@+id/btnPewPew"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
         android:gravity="center_horizontal"
-        android:layout_marginTop="50dp">
+        android:text="Pew Pew"
+        android:backgroundTint="#f06292"
+        android:layout_gravity="center"/>
 
-        <Button
-            android:id="@+id/connect"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Connect"
-            android:layout_gravity="center"/>
-
-        <Button
-            android:id="@+id/btnPewPew"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Fire"
-            android:layout_gravity="center"/>
-
-
-    </LinearLayout>
+    <Button
+        android:id="@+id/connect"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:gravity="center_horizontal"
+        android:text="Connect"
+        android:backgroundTint="#f06292"
+        android:layout_gravity="center"/>
 
 </LinearLayout>
